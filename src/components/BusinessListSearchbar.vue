@@ -1,17 +1,15 @@
 <template>
-  <div class="business-list-searchbar">
-    <div class="form-floating mb-3">
-      <input
-        :id="`business-search-bar`"
-        type="search"
-        class="form-control"
-        placeholder="Enter name of business"
-        autocomplete="organization"
-        :value="searchTerm"
-        @input="onSearch($event)"
-      />
-      <label :for="`business-search-bar`">Search for a businesses by name</label>
-    </div>
+  <div class="business-list-searchbar form-floating mb-3">
+    <input
+      id="business-search-bar"
+      type="search"
+      class="form-control"
+      placeholder="Enter name of business"
+      autocomplete="organization"
+      :value="searchTerm"
+      @input="onSearch($event)"
+    />
+    <label for="business-search-bar">Search for a businesses by name</label>
   </div>
 </template>
 

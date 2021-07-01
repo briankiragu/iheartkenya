@@ -8,6 +8,7 @@ const baseUrl = 'https://heartofkenya.com/TableSearchJson?config=directoryMachak
 
 export default () => {
   const searchTerm: Ref<string> = ref('');
+  const filterTerm: Ref<string> = ref('');
   const categories: Ref<ICategory[]> = ref([
     { id: 1, name: 'beauty' },
     { id: 2, name: 'bookstore' },
@@ -51,7 +52,7 @@ export default () => {
    * @param term {null | string} The search term
    * @author Brian K. Kiragu <bkariuki@hotmail.com>
    */
-  const getBusinesses = async (term: null | string = null) => {
+  const getBusinesses = async (term: null | string = null): Promise<void> => {
     // Check if a search term was provided.
     const endpoint = term ? `${baseUrl}&search=${term}` : baseUrl;
 
@@ -73,7 +74,7 @@ export default () => {
    * @param data {IBusinessForm} User input data
    * @author Brian K. Kiragu <bkariuki@hotmail.com>
    */
-  const updateBusiness = async (data: IBusinessForm) => {
+  const updateBusiness = async (data: IBusinessForm): Promise<void> => {
     // Launch the request.
     const response = await fetch(baseUrl, {
       method: 'POST',
@@ -100,6 +101,7 @@ export default () => {
   // Return the function results.
   return {
     searchTerm,
+    filterTerm,
     categories,
     businesses,
     hasBusinesses,

@@ -8,8 +8,17 @@
       <div id="business-modals"></div>
     </div>
 
-    <!-- Searchbar. -->
-    <BusinessListSearchbar v-model:search-term.lazy="searchTerm" />
+    <div class="row g-2">
+      <!-- Dropdown Filter. -->
+      <div class="col-md-3">
+        <BusinessListDropdown v-model:filter-term.lazy="filterTerm" />
+      </div>
+
+      <!-- Searchbar. -->
+      <div class="col">
+        <BusinessListSearchbar v-model:search-term.lazy="searchTerm" />
+      </div>
+    </div>
 
     <!-- List of businesses. -->
     <div v-if="hasBusinesses" class="business-list__card">
@@ -20,6 +29,9 @@
         :categories="categories"
       />
     </div>
+
+    <!-- Add a new business. -->
+    <BusinessListAdd />
   </div>
 </template>
 
@@ -29,6 +41,8 @@
 import { defineAsyncComponent, defineComponent, onMounted, provide } from 'vue';
 import useBackend from '../composables/useBackend';
 import BusinessListSearchbar from './BusinessListSearchbar.vue';
+import BusinessListDropdown from './BusinessListDropdown.vue';
+import BusinessListAdd from './BusinessListAdd.vue';
 
 const BusinessListCard = defineAsyncComponent(
   () => import('./BusinessListCard.vue'),
@@ -36,12 +50,23 @@ const BusinessListCard = defineAsyncComponent(
 
 export default defineComponent({
   name: 'BusinessList',
-  components: { BusinessListSearchbar, BusinessListCard },
+  components: {
+    BusinessListSearchbar,
+    BusinessListDropdown,
+    BusinessListCard,
+    BusinessListAdd,
+  },
 
   setup() {
     // Get the API methods.
-    const { searchTerm, categories, businesses, hasBusinesses, getBusinesses } =
-      useBackend();
+    const {
+      searchTerm,
+      filterTerm,
+      categories,
+      businesses,
+      hasBusinesses,
+      getBusinesses,
+    } = useBackend();
 
     // Fetch the data when the component is mounted.
     onMounted(getBusinesses);
@@ -51,6 +76,7 @@ export default defineComponent({
 
     return {
       searchTerm,
+      filterTerm,
       categories,
       businesses,
       hasBusinesses,

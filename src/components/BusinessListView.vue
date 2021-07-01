@@ -78,7 +78,7 @@
 
                 <!-- Actions. -->
                 <div class="business-list-view__actions ms-3">
-                  <BusinessListCardModal />
+                  <BusinessListModal />
                 </div>
               </div>
 
@@ -117,13 +117,13 @@ import { computed, defineAsyncComponent, defineComponent, inject } from 'vue';
 import useFormatting from '../composables/useFormatting';
 import { IBusiness } from '../interfaces';
 
-const BusinessListCardModal = defineAsyncComponent(
-  () => import('./BusinessListCardModal.vue'),
+const BusinessListModal = defineAsyncComponent(
+  () => import('./BusinessListModal.vue'),
 );
 
 export default defineComponent({
   name: 'BusinessListView',
-  components: { BusinessListCardModal },
+  components: { BusinessListModal },
 
   setup() {
     // Retrive the business from the parent component.
