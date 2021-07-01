@@ -1,8 +1,17 @@
 <template>
   <div class="business-list px-3 py-4">
-    <!-- Modals. -->
-    <div id="modals"></div>
+    <div id="teleport">
+      <!-- Page Views. -->
+      <div id="business-views"></div>
 
+      <!-- Modals. -->
+      <div id="business-modals"></div>
+    </div>
+
+    <!-- Searchbar. -->
+    <BusinessListSearchbar v-model:search-term.lazy="searchTerm" />
+
+    <!-- List of businesses. -->
     <div v-if="hasBusinesses" class="business-list__card">
       <BusinessListCard
         v-for="business in businesses"
@@ -17,8 +26,9 @@
 <script lang="ts">
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
-import { defineAsyncComponent, defineComponent, onMounted } from 'vue';
+import { defineAsyncComponent, defineComponent, onMounted, provide } from 'vue';
 import useBackend from '../composables/useBackend';
+import BusinessListSearchbar from './BusinessListSearchbar.vue';
 
 const BusinessListCard = defineAsyncComponent(
   () => import('./BusinessListCard.vue'),
@@ -26,16 +36,26 @@ const BusinessListCard = defineAsyncComponent(
 
 export default defineComponent({
   name: 'BusinessList',
-  components: { BusinessListCard },
+  components: { BusinessListSearchbar, BusinessListCard },
 
   setup() {
-    const { categories, businesses, hasBusinesses, getBusinesses } =
+    // Get the API methods.
+    const { searchTerm, categories, businesses, hasBusinesses, getBusinesses } =
       useBackend();
 
     // Fetch the data when the component is mounted.
     onMounted(getBusinesses);
 
-    return { categories, businesses, hasBusinesses, getBusinesses };
+    // Provide the categories to the children.
+    provide('categories', categories);
+
+    return {
+      searchTerm,
+      categories,
+      businesses,
+      hasBusinesses,
+      getBusinesses,
+    };
   },
 });
 </script>

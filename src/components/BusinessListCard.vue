@@ -46,10 +46,7 @@
 
         <!-- Actions. -->
         <div class="business-list-card__info-actions">
-          <BusinessListCardModal
-            :business="business"
-            :categories="categories"
-          />
+          <BusinessListView />
         </div>
       </div>
     </div>
@@ -59,13 +56,22 @@
 <script lang="ts">
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
-import { computed, defineComponent, Ref } from 'vue';
-import BusinessListCardModal from './BusinessListCardModal.vue';
+import {
+  computed,
+  defineAsyncComponent,
+  defineComponent,
+  provide,
+  Ref,
+} from 'vue';
 import { IBusiness, ICategory } from '../interfaces';
+
+const BusinessListView = defineAsyncComponent(
+  () => import('./BusinessListView.vue'),
+);
 
 export default defineComponent({
   name: 'BusinessListCard',
-  components: { BusinessListCardModal },
+  components: { BusinessListView },
 
   props: {
     business: { type: Object as () => IBusiness, default: () => {} },
@@ -73,9 +79,13 @@ export default defineComponent({
   },
 
   setup(props) {
+    // Check if the business is locally owned.
     const isLocallyOwned: Ref<boolean> = computed(
       () => props.business.localowned === 'true',
     );
+
+    // Provide the business to all children.
+    provide('business', props.business);
 
     return { isLocallyOwned };
   },

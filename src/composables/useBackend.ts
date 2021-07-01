@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
-import { computed, Ref, ref } from "vue";
+import { computed, Ref, ref, watch } from "vue";
 import { IBusiness, ICategory } from "../interfaces";
 
 const baseUrl = 'https://heartofkenya.com/TableSearchJson?config=directoryMachakosJson';
 
 export default () => {
+  const searchTerm: Ref<string> = ref('');
   const categories: Ref<ICategory[]> = ref([
     { id: 1, name: 'beauty' },
     { id: 2, name: 'bookstore' },
@@ -44,9 +45,9 @@ export default () => {
   const hasBusinesses: Ref<boolean> = computed(() => businesses.value.length > 0)
 
   // Function to query endpoint.
-  const getBusinesses = async (searchTerm: null | string = null) => {
+  const getBusinesses = async (term: null | string = null) => {
     // Check if a search term was provided.
-    const endpoint = searchTerm ? `${baseUrl}&search=${searchTerm}` : baseUrl;
+    const endpoint = term ? `${baseUrl}&search=${term}` : baseUrl;
 
     // Launch the request.
     const response = await fetch(endpoint);
@@ -60,6 +61,11 @@ export default () => {
     businesses.value = await response.json();
   }
 
+  // Watch the search term for changes.
+  watch(searchTerm, (newValue) => {
+    getBusinesses(newValue);
+  });
+
   // Return the function results.
-  return { categories, businesses, hasBusinesses, getBusinesses };
+  return { searchTerm, categories, businesses, hasBusinesses, getBusinesses };
 };

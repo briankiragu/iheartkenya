@@ -4,7 +4,7 @@
     type="button"
     class="business-list-card-modal__trigger rounded-circle border-0 shadow"
     data-bs-toggle="modal"
-    :data-bs-target="`#modal${business.directoryIdx}`"
+    :data-bs-target="`#modal${business?.directoryIdx}`"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,19 +25,21 @@
   </button>
 
   <!-- Modal -->
-  <teleport to="#modals">
+  <teleport to="#business-modals">
     <div
-      :id="`modal${business.directoryIdx}`"
+      :id="`modal${business?.directoryIdx}`"
       class="modal fade"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
       tabindex="-1"
-      :aria-labelledby="`modal${business.directoryIdx}Label`"
+      :aria-labelledby="`modal${business?.directoryIdx}Label`"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 :id="`modal${business.directoryIdx}Label`" class="modal-title">
-              Edit {{ business.title }}
+            <h5 :id="`modal${business?.directoryIdx}Label`" class="modal-title">
+              Edit {{ business?.title }}
             </h5>
             <button
               type="button"
@@ -53,23 +55,24 @@
               <!-- Name of business. -->
               <div class="form-floating mb-2">
                 <input
-                  :id="`business-title-${business.directoryIdx}`"
+                  :id="`business-title-${business?.directoryIdx}`"
                   type="text"
                   class="form-control"
                   placeholder="Name of business"
-                  :value="business.title"
+                  :value="business?.title"
+                  autocomplete="organization"
                 />
-                <label :for="`business-title-${business.directoryIdx}`">
+                <label :for="`business-title-${business?.directoryIdx}`">
                   Name of Business
                 </label>
               </div>
 
               <div class="row g-2">
-                <!-- Category of Business. -->
-                <div class="col-md">
+                <!-- Category of business. -->
+                <div class="col-md-6">
                   <div class="form-floating">
                     <select
-                      id="floatingSelectGrid"
+                      :id="`business-category-${business?.directoryIdx}`"
                       class="form-select"
                       aria-label="Floating label select example"
                     >
@@ -82,9 +85,92 @@
                         {{ toTitle(category.name) }}
                       </option>
                     </select>
-                    <label for="floatingSelectGrid">Works with selects</label>
+                    <label :for="`business-category-${business?.directoryIdx}`"
+                      >Works with selects</label
+                    >
                   </div>
                 </div>
+
+                <!-- Location of business. -->
+                <div class="col-md-6">
+                  <div class="form-floating mb-2">
+                    <input
+                      :id="`business-location-${business?.directoryIdx}`"
+                      type="text"
+                      class="form-control"
+                      placeholder="Where is this business located?"
+                      autocomplete="address-level1"
+                      :value="business?.city"
+                    />
+                    <label :for="`business-location-${business?.directoryIdx}`">
+                      Where is this business?
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-2">
+                <!-- Phone Number of business. -->
+                <div class="col-md-5">
+                  <div class="form-floating mb-2">
+                    <input
+                      :id="`business-phone-${business?.directoryIdx}`"
+                      type="number"
+                      class="form-control"
+                      placeholder="Business Phone Number"
+                      autocomplete="tel"
+                      :value="business?.city"
+                    />
+                    <label :for="`business-phone-${business?.directoryIdx}`">
+                      Phone Number
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Email of business. -->
+                <div class="col-md-7">
+                  <div class="form-floating mb-2">
+                    <input
+                      :id="`business-email-${business?.directoryIdx}`"
+                      type="email"
+                      class="form-control"
+                      placeholder="Business Email"
+                      autocomplete="email"
+                      :value="business?.city"
+                    />
+                    <label :for="`business-email-${business?.directoryIdx}`">
+                      Business Email
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Business Website. -->
+              <div class="form-floating mb-2">
+                <input
+                  :id="`business-website-${business?.directoryIdx}`"
+                  type="url"
+                  class="form-control"
+                  placeholder="business website"
+                  :value="business?.website"
+                  autocomplete="url"
+                />
+                <label :for="`business-website-${business?.directoryIdx}`">
+                  Business Website
+                </label>
+              </div>
+
+              <!-- Notes.-->
+              <div class="form-floating">
+                <textarea
+                  :id="`business-note-${business?.directoryIdx}`"
+                  class="form-control"
+                  placeholder="Leave a note here"
+                  style="height: 100px;"
+                ></textarea>
+                <label :for="`business-note-${business?.directoryIdx}`">
+                  Notes
+                </label>
               </div>
             </form>
           </div>
@@ -111,26 +197,23 @@
 <script lang="ts">
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
-import { defineComponent } from 'vue';
+import { defineComponent, inject } from 'vue';
 import useFormatting from '../composables/useFormatting';
 import { IBusiness, ICategory } from '../interfaces';
 
 export default defineComponent({
   name: 'BusinessListCardModal',
-  props: {
-    business: { type: Object as () => IBusiness, default: () => {} },
-    categories: { type: Array as () => ICategory[], default: () => [] },
-  },
-  emits: ['updated'],
 
   setup() {
+    // Retrive the business from the parent component.
+    const business: undefined | IBusiness = inject('business');
+    const categories: undefined | ICategory[] = inject('categories');
+
     const { toTitle } = useFormatting();
 
-    const onSubmit = () => {
-      console.log('New data');
-    };
+    const onSubmit = () => {};
 
-    return { toTitle, onSubmit };
+    return { business, categories, toTitle, onSubmit };
   },
 });
 </script>
