@@ -2,7 +2,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import { computed, Ref, ref, watch } from "vue";
-import { IBusiness, ICategory } from "../interfaces";
+import { IBusiness, IBusinessForm, ICategory } from "../interfaces";
 
 const baseUrl = 'https://heartofkenya.com/TableSearchJson?config=directoryMachakosJson';
 
@@ -44,7 +44,13 @@ export default () => {
   ]);
   const hasBusinesses: Ref<boolean> = computed(() => businesses.value.length > 0)
 
-  // Function to query endpoint.
+
+  /**
+   * Function to query endpoint.
+   *
+   * @param term {null | string} The search term
+   * @author Brian K. Kiragu <bkariuki@hotmail.com>
+   */
   const getBusinesses = async (term: null | string = null) => {
     // Check if a search term was provided.
     const endpoint = term ? `${baseUrl}&search=${term}` : baseUrl;
@@ -54,11 +60,36 @@ export default () => {
 
     // Check for errors.
     if (!response.ok) {
-      throw new Error(`There was an error: ${response.text}`);
+      throw new Error(`There was an error ${response.statusText}`);
     }
 
     // Get the data from the request.
     businesses.value = await response.json();
+  }
+
+  /**
+   * Update a business
+   *
+   * @param data {IBusinessForm} User input data
+   * @author Brian K. Kiragu <bkariuki@hotmail.com>
+   */
+  const updateBusiness = async (data: IBusinessForm) => {
+    // Launch the request.
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    // Check for errors.
+    if (!response.ok) {
+      throw new Error(`There was an error ${response.statusText}`);
+    }
+
+    // Get the data from the request.
+    return response.json();
   }
 
   // Watch the search term for changes.
@@ -67,5 +98,12 @@ export default () => {
   });
 
   // Return the function results.
-  return { searchTerm, categories, businesses, hasBusinesses, getBusinesses };
+  return {
+    searchTerm,
+    categories,
+    businesses,
+    hasBusinesses,
+    getBusinesses,
+    updateBusiness
+  };
 };

@@ -46,7 +46,7 @@ export default defineComponent({
     // Fetch the data when the component is mounted.
     onMounted(getBusinesses);
 
-    // Provide the categories to the children.
+    // Provide the categories and updateBusiness to the children.
     provide('categories', categories);
 
     return {
@@ -54,7 +54,6 @@ export default defineComponent({
       categories,
       businesses,
       hasBusinesses,
-      getBusinesses,
     };
   },
 });
