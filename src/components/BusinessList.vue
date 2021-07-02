@@ -40,13 +40,15 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
 import { defineAsyncComponent, defineComponent, onMounted, provide } from 'vue';
-import useBackend from '../composables/useBackend';
 import BusinessListSearchbar from './BusinessListSearchbar.vue';
 import BusinessListDropdown from './BusinessListDropdown.vue';
-import BusinessListAdd from './BusinessListAdd.vue';
+import useBackend from '../composables/useBackend';
 
 const BusinessListCard = defineAsyncComponent(
   () => import('./BusinessListCard.vue'),
+);
+const BusinessListAdd = defineAsyncComponent(
+  () => import('./BusinessListAdd.vue'),
 );
 
 export default defineComponent({
