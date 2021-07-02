@@ -26,12 +26,13 @@
         v-for="business in businesses"
         :key="business.directoryIdx"
         :business="business"
-        :categories="categories"
       />
     </div>
 
     <!-- Add a new business. -->
-    <BusinessListAdd />
+    <div class="business-list__add">
+      <BusinessListAdd />
+    </div>
   </div>
 </template>
 
