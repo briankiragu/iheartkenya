@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
-import { computed, Ref, ref, watch } from "vue";
-import { IBusiness, IBusinessForm, ICategory } from "../interfaces";
+import { computed, Ref, ref } from "vue";
+import { IBusiness, IBusinessForm, ICategory, IPaginatedResponse } from "../interfaces";
 
 const baseUrl = 'https://heartofkenya.com/TableSearchJson?config=directoryMachakosJson';
 
@@ -49,12 +49,17 @@ export default () => {
   /**
    * Function to query endpoint.
    *
+   * @param page {number} The page number.
    * @param term {null | string} The search term
+   * @returns Promise<IBusiness[]>
    * @author Brian K. Kiragu <bkariuki@hotmail.com>
    */
-  const getBusinesses = async (term: null | string = null): Promise<void> => {
+  const getBusinesses = async (
+    page: number = 1,
+    term: null | string = null
+  ): Promise<IPaginatedResponse> => {
     // Check if a search term was provided.
-    const endpoint = term ? `${baseUrl}&search=${term}` : baseUrl;
+    const endpoint = term ? `${baseUrl}&page=${page}&search=${term}` : baseUrl;
 
     // Launch the request.
     const response = await fetch(endpoint);
@@ -65,7 +70,7 @@ export default () => {
     }
 
     // Get the data from the request.
-    businesses.value = await response.json();
+    return response.json();
   }
 
   /**
@@ -92,11 +97,6 @@ export default () => {
     // Get the data from the request.
     return response.json();
   }
-
-  // Watch the search term for changes.
-  watch(searchTerm, (newValue) => {
-    getBusinesses(newValue);
-  });
 
   // Return the function results.
   return {

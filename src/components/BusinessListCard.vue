@@ -10,9 +10,9 @@
     </div>
 
     <!-- Main content. -->
-    <div class="business-list-card__text pb-3 pt-4 px-4">
+    <div class="business-list-card__text">
       <!-- Business Title. -->
-      <h2 class="business-list-card__title mb-1">
+      <h2 class="business-list-card__title mb-1 py-2">
         {{ business.title }}
       </h2>
 
@@ -56,14 +56,8 @@
 <script lang="ts">
 /* eslint-disable import/no-unresolved */
 /* eslint-disable import/extensions */
-import {
-  computed,
-  defineAsyncComponent,
-  defineComponent,
-  provide,
-  Ref,
-} from 'vue';
-import { IBusiness, ICategory } from '../interfaces';
+import { defineAsyncComponent, defineComponent, provide } from 'vue';
+import { IBusiness } from '../interfaces';
 
 const BusinessListView = defineAsyncComponent(
   () => import('./BusinessListView.vue'),
@@ -75,14 +69,11 @@ export default defineComponent({
 
   props: {
     business: { type: Object as () => IBusiness, default: () => {} },
-    categories: { type: Array as () => ICategory[], default: () => [] },
   },
 
   setup(props) {
     // Check if the business is locally owned.
-    const isLocallyOwned: Ref<boolean> = computed(
-      () => props.business.localowned === 'true',
-    );
+    const isLocallyOwned: boolean = props.business.localowned === 'true';
 
     // Provide the business to all children.
     provide('business', props.business);
@@ -94,7 +85,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .business-list-card {
-  background-color: rgba($color: #000000, $alpha: 0.01);
+  padding: 20px 30px;
 
   &__image {
     img {
@@ -106,8 +97,8 @@ export default defineComponent({
   }
 
   &__title {
-    color: #111827;
-    font-size: 1.5rem;
+    color: hsl(220, 4%, 29%);
+    font-size: 1.7rem;
     font-weight: 520;
   }
 
@@ -125,6 +116,10 @@ export default defineComponent({
     background-color: #a5b4fc;
     color: #064e3b;
     font-weight: 550;
+
+    img {
+      width: 30px;
+    }
   }
 }
 </style>

@@ -17,6 +17,12 @@ export interface IBusiness {
   modified: string;
 }
 
+export interface IPaginatedResponse {
+  rowcount: number;
+  recordsperpage: number;
+  data: IBusiness[];
+}
+
 export interface IBusinessForm {
   title: string | undefined;
   category: string;

@@ -20,5 +20,6 @@ export default defineComponent({
   font-family: Inter, 'Avenir Next', Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 </style>
