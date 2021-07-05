@@ -112,7 +112,7 @@ export default defineComponent({
         .catch((err: Error) => console.error(err.message));
 
       // Add a listener to fetch more records on scroll-to-bottom.
-      window.onscroll = () => {
+      window.onscroll = async () => {
         if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
           // Set the state to loading.
           isLoading.value = true;

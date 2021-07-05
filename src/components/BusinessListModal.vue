@@ -58,22 +58,31 @@
                 v-model="businessForm.title"
                 type="text"
                 class="form-control"
+                :class="{ 'is-invalid': v$.title.$invalid }"
                 placeholder="Name of business"
                 autocomplete="organization"
               />
               <label :for="`business-title-${business?.directoryIdx}`">
                 Name of Business
               </label>
+
+              <!-- Validation feedback. -->
+              <div v-if="v$.title.$invalid" class="invalid-feedback">
+                <p v-for="error of v$.title.$errors" :key="error.$uid">
+                  <strong>{{ error.$message }}</strong>
+                </p>
+              </div>
             </div>
 
             <div class="row g-2">
               <!-- Category of business. -->
-              <div class="col-md-6">
+              <div v-if="categories" class="col-md-6">
                 <div class="form-floating">
                   <select
                     :id="`business-category-${business?.directoryIdx}`"
                     v-model="businessForm.category"
                     class="form-select"
+                    :class="{ 'is-invalid': v$.category.$invalid }"
                     aria-label="Floating label select example"
                   >
                     <option value="" disabled>Open this select menu</option>
@@ -85,9 +94,12 @@
                       {{ toTitle(category.name) }}
                     </option>
                   </select>
-                  <label :for="`business-category-${business?.directoryIdx}`"
-                    >Works with selects</label
-                  >
+                  <label :for="`business-category-${business?.directoryIdx}`">
+                    Works with selects
+                  </label>
+                  <div v-if="v$.category.$invalid" class="invalid-feedback">
+                    Please select a category.
+                  </div>
                 </div>
               </div>
 
@@ -99,12 +111,16 @@
                     v-model="businessForm.city"
                     type="text"
                     class="form-control"
+                    :class="{ 'is-invalid': v$.city.$invalid }"
                     placeholder="Where is this business located?"
                     autocomplete="address-level1"
                   />
                   <label :for="`business-location-${business?.directoryIdx}`">
                     Where is this business?
                   </label>
+                  <div v-if="v$.city.$invalid" class="invalid-feedback">
+                    Please give a city.
+                  </div>
                 </div>
               </div>
             </div>
@@ -118,12 +134,16 @@
                     v-model.number="businessForm.phone"
                     type="number"
                     class="form-control"
+                    :class="{ 'is-invalid': v$.phone.$invalid }"
                     placeholder="Business Phone Number"
                     autocomplete="tel"
                   />
                   <label :for="`business-phone-${business?.directoryIdx}`">
                     Phone Number
                   </label>
+                  <div v-if="v$.phone.$invalid" class="invalid-feedback">
+                    Please give a valid phone number.
+                  </div>
                 </div>
               </div>
 
@@ -135,12 +155,16 @@
                     v-model="businessForm.email"
                     type="email"
                     class="form-control"
+                    :class="{ 'is-invalid': v$.email.$invalid }"
                     placeholder="Business Email"
                     autocomplete="email"
                   />
                   <label :for="`business-email-${business?.directoryIdx}`">
                     Business Email
                   </label>
+                  <div v-if="v$.email.$invalid" class="invalid-feedback">
+                    Please give a valid email address.
+                  </div>
                 </div>
               </div>
             </div>
@@ -152,12 +176,16 @@
                 v-model="businessForm.website"
                 type="url"
                 class="form-control"
+                :class="{ 'is-invalid': v$.website.$invalid }"
                 placeholder="business website"
                 autocomplete="url"
               />
               <label :for="`business-website-${business?.directoryIdx}`">
                 Business Website
               </label>
+              <div v-if="v$.website.$invalid" class="invalid-feedback">
+                Please give a valid website.
+              </div>
             </div>
 
             <!-- Notes.-->
@@ -166,12 +194,16 @@
                 :id="`business-note-${business?.directoryIdx}`"
                 v-model="businessForm.notes"
                 class="form-control"
+                :class="{ 'is-invalid': v$.notes.$invalid }"
                 placeholder="Leave a note here"
                 style="height: 100px"
               ></textarea>
               <label :for="`business-note-${business?.directoryIdx}`">
                 Notes
               </label>
+              <div v-if="v$.notes.$invalid" class="invalid-feedback">
+                Please give a notes.
+              </div>
             </div>
           </div>
 
@@ -184,8 +216,12 @@
             >
               Close
             </button>
-            <button type="submit" class="btn btn-primary">
-              Save my changes
+            <button
+              type="submit"
+              class="btn btn-primary"
+              :class="{ disabled: v$.$invalid }"
+            >
+              Update this business
             </button>
           </div>
         </form>
@@ -197,7 +233,9 @@
 <script lang="ts">
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
-import { defineComponent, inject, Ref, ref } from 'vue';
+import { defineComponent, inject, reactive } from 'vue';
+import useVuelidate from '@vuelidate/core';
+import { required, email, url } from '@vuelidate/validators';
 import useBackend from '../composables/useBackend';
 import useFormatting from '../composables/useFormatting';
 import { IBusiness, IBusinessForm, ICategory } from '../interfaces';
@@ -213,26 +251,56 @@ export default defineComponent({
     // Get the update business method.
     const { updateBusiness } = useBackend();
 
+    // Formatting methods.
+    const { toTitle } = useFormatting();
+
     // Populate the form values.
-    const businessForm: Ref<IBusinessForm> = ref({
-      title: business?.title,
-      category: '',
-      city: business?.city,
-      phone: null,
+    const businessForm: IBusinessForm = reactive({
+      title: business!.title,
+      category: business!.category,
+      city: business!.city,
+      phone: '',
       email: '',
-      website: business?.website,
+      website: business!.website ? business!.website : '',
       notes: '',
     });
 
+    // Validation rules.
+    const rules = {
+      title: { required },
+      category: {},
+      city: {},
+      phone: {},
+      email: { email },
+      website: { url },
+      notes: {},
+    };
+
+    // Setup vuelidate.
+    const v$ = useVuelidate(rules, businessForm, {
+      $autoDirty: true,
+      $lazy: true,
+    });
+
+    /**
+     * When a user clicks submit.
+     *
+     * @author Brian K. Kiragu <bkariuki@hotmail.com>
+     */
     const onSubmit = () => {
-      updateBusiness(businessForm.value)
+      updateBusiness(businessForm)
         .then((res: any) => console.log(res))
         .catch((err: Error) => console.error(err));
     };
 
-    const { toTitle } = useFormatting();
-
-    return { business, categories, businessForm, toTitle, onSubmit };
+    return {
+      v$,
+      business,
+      categories,
+      businessForm,
+      toTitle,
+      onSubmit,
+    };
   },
 });
 </script>

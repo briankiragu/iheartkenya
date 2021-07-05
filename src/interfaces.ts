@@ -24,11 +24,11 @@ export interface IPaginatedResponse {
 }
 
 export interface IBusinessForm {
-  title: string | undefined;
+  title: string;
   category: string;
-  city: string | undefined;
-  phone: null | number;
+  city: string;
+  phone: string;
   email: string;
-  website: string | null | undefined;
+  website: string;
   notes: string;
 }
